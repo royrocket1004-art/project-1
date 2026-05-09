@@ -1,9 +1,17 @@
+좋은 피드백입니다! 질문의 흐름과 제목을 처음의 의과학적 느낌으로 되돌리고, 마지막 결과 페이지에서 '이유'에 대한 통계까지 한눈에 보이도록 보완했습니다.
+
+이제 친구들이 어떤 방식을 선호하는지뿐만 아니라, "왜 그 방식을 선호하는지"에 대한 비중도 차트로 확인할 수 있습니다.
+
+📥 최종 수정된 코드를 복사하세요
+아래 코드를 복사해서 GitHub의 index.html에 이전과 같은 방식으로 덮어쓰기 해주세요.
+
+HTML
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>마음 진단: 대면 vs 챗봇 상담 선호도 조사</title>
+    <title>의료 데이터 신뢰도 향상을 위한 대면 vs 챗봇 선호도 조사</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -24,87 +32,96 @@
 <body class="min-h-screen flex flex-col items-center p-4">
     <div class="w-full max-w-md mt-6 mb-8">
         <div class="flex justify-between items-end mb-2">
-            <h1 class="text-xl font-extrabold gradient-text">Mind Survey</h1>
-            <span id="step-indicator" class="text-sm font-medium text-slate-400">1 / 5</span>
+            <h1 class="text-sm font-extrabold gradient-text">의과학 진로탐색 프로젝트</h1>
+            <span id="step-indicator" class="text-xs font-medium text-slate-400">1 / 5</span>
         </div>
-        <div class="progress-bar">
-            <div id="progress-fill" class="progress-fill" style="width: 20%;"></div>
-        </div>
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill" style="width: 20%;"></div></div>
     </div>
 
     <main class="w-full max-w-md flex-grow">
         <div id="step1" class="step active glass-card p-8">
             <div class="text-center mb-6">
-                <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-comments text-3xl text-indigo-600"></i>
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-microscope text-3xl text-blue-600"></i>
                 </div>
-                <h2 class="text-2xl font-bold mb-2">진솔한 마음, 어디에?</h2>
-                <p class="text-slate-500 text-sm leading-relaxed">
-                    의과학 수업 중 궁금해진 질문!<br>우리는 누구에게 더 정직하게 고민을 말할까요?<br><br>친구들의 답변은 익명으로 처리되어<br>AI 질병 예측 모델 연구의 기초가 됩니다.
+                <h2 class="text-xl font-bold mb-4">의료 데이터 신뢰도 향상을 위한<br>대면 vs 챗봇 선호도 조사</h2>
+                <p class="text-slate-500 text-sm leading-relaxed text-left bg-slate-50 p-4 rounded-xl">
+                    질병 예측 AI 모델의 정확도는 사용자의 <b>'정직한 데이터'</b>에 달려 있습니다. 우리는 과연 의사와 AI 중 누구에게 더 솔직할까요? 여러분의 소중한 의견을 들려주세요.
                 </p>
             </div>
-            <button onclick="nextStep(2)" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">설문 시작하기</button>
+            <button onclick="nextStep(2)" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">설문 참여하기</button>
         </div>
 
         <div id="step2" class="step glass-card p-8">
-            <h3 class="text-xl font-bold mb-6 text-center">어떤 방식의 상담이<br>더 <span class="text-indigo-600">편안함</span>을 느끼나요?</h3>
+            <h3 class="text-xl font-bold mb-6 text-center underline decoration-indigo-200 underline-offset-8">상담 매체 선호도</h3>
+            <p class="text-sm text-slate-500 mb-6 text-center">평소 고민이 있을 때 어떤 방식이 더 편한가요?</p>
             <div class="space-y-4">
                 <button onclick="selectOption('q1', 'offline')" class="q1-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500"><i class="fa-solid fa-user-doctor"></i></div>
-                    <div><div class="font-bold">대면 상담 (사람)</div><div class="text-xs text-slate-400">눈을 맞추고 나누는 대화</div></div>
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500"><i class="fa-solid fa-user-md"></i></div>
+                    <div class="font-bold">의사와 대면 상담</div>
                 </button>
                 <button onclick="selectOption('q1', 'chatbot')" class="q1-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
                     <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-500"><i class="fa-solid fa-robot"></i></div>
-                    <div><div class="font-bold">챗봇/AI 상담</div><div class="text-xs text-slate-400">부담 없는 텍스트 대화</div></div>
+                    <div class="font-bold">익명 AI 챗봇 상담</div>
                 </button>
             </div>
-            <button onclick="nextStep(3)" id="next2" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">다음</button>
+            <button onclick="nextStep(3)" id="next2" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">다음 단계</button>
         </div>
 
         <div id="step3" class="step glass-card p-8">
-            <h3 class="text-xl font-bold mb-6 text-center">나의 <span class="text-red-500">부끄러운 습관</span>을<br>말해야 한다면 누구에게 더 솔직할까요?</h3>
+            <h3 class="text-xl font-bold mb-6 text-center">정보의 정직성</h3>
+            <p class="text-sm text-slate-500 mb-6 text-center">나의 민감한 생활습관(음주, 흡연 등)을<br>더 정직하게 말할 수 있는 곳은?</p>
             <div class="space-y-4">
                 <button onclick="selectOption('q2', 'offline')" class="q2-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500"><i class="fa-solid fa-user-md"></i></div>
-                    <div class="font-bold">그래도 의사에게 직접 말한다</div>
+                    <div class="font-bold uppercase text-xs text-blue-500 border border-blue-200 px-2 py-1 rounded-md mb-2 block w-fit">Offline</div>
+                    <div class="font-bold text-sm">의사에게 직접 정직하게 말한다</div>
                 </button>
                 <button onclick="selectOption('q2', 'chatbot')" class="q2-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-500"><i class="fa-solid fa-comment-dots"></i></div>
-                    <div class="font-bold">판단받지 않는 AI에게 말한다</div>
+                    <div class="font-bold uppercase text-xs text-purple-500 border border-purple-200 px-2 py-1 rounded-md mb-2 block w-fit">AI Chatbot</div>
+                    <div class="font-bold text-sm">AI에게 정직하게 입력한다</div>
                 </button>
             </div>
-            <button onclick="nextStep(4)" id="next3" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">다음</button>
+            <button onclick="nextStep(4)" id="next3" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">다음 단계</button>
         </div>
 
         <div id="step4" class="step glass-card p-8">
-            <h3 class="text-xl font-bold mb-6 text-center">가장 큰 <span class="text-indigo-600">이유</span>는 무엇인가요?</h3>
+            <h3 class="text-xl font-bold mb-6 text-center">선택의 이유</h3>
+            <p class="text-sm text-slate-500 mb-6 text-center">그 방식을 선택한 가장 큰 이유는?</p>
             <div id="reason-container" class="space-y-3"></div>
-            <button onclick="nextStep(5)" id="next4" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">결과 보기</button>
+            <button onclick="nextStep(5)" id="next4" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">결과 분석 보기</button>
         </div>
 
         <div id="step5" class="step glass-card p-6">
             <div class="text-center mb-6">
-                <div class="inline-block px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-bold mb-2">
-                    총 <span id="total-count">0</span>명의 친구 참여 중
-                </div>
-                <h3 class="text-2xl font-bold gradient-text">실시간 설문 통계</h3>
+                <div class="inline-block px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold mb-2">총 <span id="total-count">0</span>명 참여</div>
+                <h3 class="text-xl font-bold">임상 데이터 수집 결과</h3>
             </div>
-            <div class="mb-8"><canvas id="resultChart" width="400" height="400"></canvas></div>
-            <div class="p-4 bg-slate-50 rounded-xl mb-4">
-                <div class="text-xs font-bold text-slate-400 mb-1 text-center">나의 선택 요약</div>
-                <div id="my-choice-summary" class="font-bold text-indigo-600 text-center"></div>
+            
+            <div class="mb-8">
+                <p class="text-xs font-bold text-slate-400 mb-2">1. 상담 방식 선호도</p>
+                <canvas id="resultChart1" width="400" height="300"></canvas>
             </div>
-            <button onclick="location.reload()" class="w-full py-3 border-2 border-indigo-100 text-indigo-600 rounded-2xl font-bold">다시 하기</button>
+
+            <div class="mb-8">
+                <p class="text-xs font-bold text-slate-400 mb-2">2. 선택 이유 통계 (Top 3)</p>
+                <canvas id="resultChart2" width="400" height="300"></canvas>
+            </div>
+
+            <button onclick="location.reload()" class="w-full py-3 bg-slate-100 text-slate-600 rounded-2xl font-bold text-sm">다시 참여하기</button>
         </div>
     </main>
 
     <script>
         let currentStep = 1;
         let selections = { q1: null, q2: null, q3: null };
-        let mockStats = { offline: 14, chatbot: 17 };
+        
+        // 초기 가상 데이터 (발표용)
+        let mainStats = { offline: 12, chatbot: 18 };
+        let reasonStats = { 0: 8, 1: 15, 2: 7 }; // 각 이유별 득표수
+
         const reasons = {
-            offline: ["직접적인 위로를 받고 싶어서", "전문적인 느낌이 들어서", "표정이나 반응을 볼 수 있어서"],
-            chatbot: ["판단받는 기분이 안 들어서", "익명성이 보장돼서", "말하기 힘든 비밀이라서"]
+            offline: ["신뢰감과 책임감", "정서적 공감과 위로", "전문적인 조언 때문"],
+            chatbot: ["비판받지 않을 자유", "완벽한 익명성 보장", "시간/장소의 편리함"]
         };
 
         function nextStep(step) {
@@ -143,16 +160,37 @@
         }
 
         function showResults() {
-            mockStats[selections.q1]++;
-            document.getElementById('total-count').innerText = mockStats.offline + mockStats.chatbot;
-            document.getElementById('my-choice-summary').innerText = (selections.q1 === 'offline' ? '대면 상담' : '챗봇 상담') + " 선호";
-            new Chart(document.getElementById('resultChart'), {
+            mainStats[selections.q1]++;
+            reasonStats[selections.q3]++;
+            document.getElementById('total-count').innerText = mainStats.offline + mainStats.chatbot;
+
+            // Chart 1: 선호도 도넛 차트
+            new Chart(document.getElementById('resultChart1'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['대면 상담', 'AI 챗봇'],
-                    datasets: [{ data: [mockStats.offline, mockStats.chatbot], backgroundColor: ['#6366f1', '#a855f7'], borderWidth: 0 }]
+                    labels: ['대면', '챗봇'],
+                    datasets: [{ data: [mainStats.offline, mainStats.chatbot], backgroundColor: ['#3b82f6', '#a855f7'], borderWidth: 0 }]
                 },
-                options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+                options: { cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
+            });
+
+            // Chart 2: 이유 통계 바 차트
+            new Chart(document.getElementById('resultChart2'), {
+                type: 'bar',
+                data: {
+                    labels: reasons[selections.q1],
+                    datasets: [{
+                        label: '선택 인원',
+                        data: [reasonStats[0], reasonStats[1], reasonStats[2]],
+                        backgroundColor: selections.q1 === 'offline' ? '#93c5fd' : '#d8b4fe',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 10 } } } },
+                    plugins: { legend: { display: false } }
+                }
             });
         }
     </script>
