@@ -1,190 +1,83 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>의료 데이터 신뢰도 향상을 위한 대면 vs 챗봇 선호도 조사</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
-        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; color: #1e293b; -webkit-tap-highlight-color: transparent; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-        .gradient-text { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn-select { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid transparent; }
-        .btn-select.active { border-color: #6366f1; background-color: #eef2ff; transform: scale(1.02); }
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width 0.4s ease; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col items-center p-4">
-    <div class="w-full max-w-md mt-6 mb-8">
-        <div class="flex justify-between items-end mb-2">
-            <h1 class="text-sm font-extrabold gradient-text">의과학 진로탐색 프로젝트</h1>
-            <span id="step-indicator" class="text-xs font-medium text-slate-400">1 / 5</span>
-        </div>
-        <div class="progress-bar"><div id="progress-fill" class="progress-fill" style="width: 20%;"></div></div>
-    </div>
+<script>
+    let currentStep = 1;
+    let selections = { q1: null, q2: null, q3: null };
+    
+    // 로컬 저장소에서 데이터를 가져오거나 없으면 초기값 설정
+    let savedData = JSON.parse(localStorage.getItem('surveyStats')) || { offline: 14, chatbot: 19, reason0: 10, reason1: 16, reason2: 7 };
 
-    <main class="w-full max-w-md flex-grow">
-        <div id="step1" class="step active glass-card p-8">
-            <div class="text-center mb-6">
-                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-microscope text-3xl text-blue-600"></i>
-                </div>
-                <h2 class="text-xl font-bold mb-4">의료 데이터 신뢰도 향상을 위한<br>대면 vs 챗봇 선호도 조사</h2>
-                <p class="text-slate-500 text-sm leading-relaxed text-left bg-slate-50 p-4 rounded-xl">
-                    질병 예측 AI 모델의 정확도는 사용자의 <b>'정직한 데이터'</b>에 달려 있습니다. 우리는 과연 의사와 AI 중 누구에게 더 솔직할까요? 여러분의 소중한 의견을 들려주세요.
-                </p>
-            </div>
-            <button onclick="nextStep(2)" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">설문 참여하기</button>
-        </div>
+    const reasons = {
+        offline: ["따뜻한 공감과 위로 때문", "직접 대화가 더 믿음직해서", "즉각적인 반응을 볼 수 있어서"],
+        chatbot: ["판단받지 않아 마음이 편해서", "익명이라 창피하지 않아서", "언제든 바로 말할 수 있어서"]
+    };
 
-        <div id="step2" class="step glass-card p-8">
-            <h3 class="text-xl font-bold mb-6 text-center underline decoration-indigo-200 underline-offset-8">상담 매체 선호도</h3>
-            <p class="text-sm text-slate-500 mb-6 text-center">평소 고민이 있을 때 어떤 방식이 더 편한가요?</p>
-            <div class="space-y-4">
-                <button onclick="selectOption('q1', 'offline')" class="q1-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500"><i class="fa-solid fa-user-md"></i></div>
-                    <div class="font-bold">의사와 대면 상담</div>
-                </button>
-                <button onclick="selectOption('q1', 'chatbot')" class="q1-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-500"><i class="fa-solid fa-robot"></i></div>
-                    <div class="font-bold">익명 AI 챗봇 상담</div>
-                </button>
-            </div>
-            <button onclick="nextStep(3)" id="next2" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">다음 단계</button>
-        </div>
+    function nextStep(step) {
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step' + step).classList.add('active');
+        currentStep = step;
+        document.getElementById('step-indicator').innerText = step + ' / 5';
+        document.getElementById('progress-fill').style.width = (step * 20) + '%';
+        if(step === 4) renderReasons();
+        if(step === 5) showResults();
+    }
 
-        <div id="step3" class="step glass-card p-8">
-            <h3 class="text-xl font-bold mb-6 text-center">정보의 정직성</h3>
-            <p class="text-sm text-slate-500 mb-6 text-center">나의 민감한 생활습관(음주, 흡연 등)을<br>더 정직하게 말할 수 있는 곳은?</p>
-            <div class="space-y-4">
-                <button onclick="selectOption('q2', 'offline')" class="q2-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="font-bold uppercase text-xs text-blue-500 border border-blue-200 px-2 py-1 rounded-md mb-2 block w-fit">Offline</div>
-                    <div class="font-bold text-sm">의사에게 직접 정직하게 말한다</div>
-                </button>
-                <button onclick="selectOption('q2', 'chatbot')" class="q2-opt btn-select w-full p-5 text-left bg-white rounded-2xl shadow-sm flex items-center gap-4">
-                    <div class="font-bold uppercase text-xs text-purple-500 border border-purple-200 px-2 py-1 rounded-md mb-2 block w-fit">AI Chatbot</div>
-                    <div class="font-bold text-sm">AI에게 정직하게 입력한다</div>
-                </button>
-            </div>
-            <button onclick="nextStep(4)" id="next3" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">다음 단계</button>
-        </div>
-
-        <div id="step4" class="step glass-card p-8">
-            <h3 class="text-xl font-bold mb-6 text-center">선택의 이유</h3>
-            <p class="text-sm text-slate-500 mb-6 text-center">그 방식을 선택한 가장 큰 이유는?</p>
-            <div id="reason-container" class="space-y-3"></div>
-            <button onclick="nextStep(5)" id="next4" disabled class="w-full mt-8 py-4 bg-slate-200 text-slate-400 rounded-2xl font-bold transition-all">결과 분석 보기</button>
-        </div>
-
-        <div id="step5" class="step glass-card p-6">
-            <div class="text-center mb-6">
-                <div class="inline-block px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold mb-2">총 <span id="total-count">0</span>명 참여</div>
-                <h3 class="text-xl font-bold">임상 데이터 수집 결과</h3>
-            </div>
-            
-            <div class="mb-8">
-                <p class="text-xs font-bold text-slate-400 mb-2">1. 상담 방식 선호도</p>
-                <canvas id="resultChart1" width="400" height="300"></canvas>
-            </div>
-
-            <div class="mb-8">
-                <p class="text-xs font-bold text-slate-400 mb-2">2. 선택 이유 통계 (Top 3)</p>
-                <canvas id="resultChart2" width="400" height="300"></canvas>
-            </div>
-
-            <button onclick="location.reload()" class="w-full py-3 bg-slate-100 text-slate-600 rounded-2xl font-bold text-sm">다시 참여하기</button>
-        </div>
-    </main>
-
-    <script>
-        let currentStep = 1;
-        let selections = { q1: null, q2: null, q3: null };
-        
-        // 초기 가상 데이터 (발표용)
-        let mainStats = { offline: 12, chatbot: 18 };
-        let reasonStats = { 0: 8, 1: 15, 2: 7 }; // 각 이유별 득표수
-
-        const reasons = {
-            offline: ["신뢰감과 책임감", "정서적 공감과 위로", "전문적인 조언 때문"],
-            chatbot: ["비판받지 않을 자유", "완벽한 익명성 보장", "시간/장소의 편리함"]
-        };
-
-        function nextStep(step) {
-            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-            document.getElementById('step' + step).classList.add('active');
-            currentStep = step;
-            document.getElementById('step-indicator').innerText = step + ' / 5';
-            document.getElementById('progress-fill').style.width = (step * 20) + '%';
-            if(step === 4) renderReasons();
-            if(step === 5) showResults();
+    function selectOption(q, val) {
+        selections[q] = val;
+        const buttons = document.querySelectorAll('.' + q + '-opt');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        const nextBtn = document.getElementById('next' + currentStep);
+        if(nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.classList.replace('bg-slate-200', 'bg-indigo-600');
+            nextBtn.classList.replace('text-slate-400', 'text-white');
         }
+    }
 
-        function selectOption(q, val) {
-            selections[q] = val;
-            const buttons = document.querySelectorAll('.' + q + '-opt');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            const nextBtn = document.getElementById('next' + currentStep);
-            if(nextBtn) {
-                nextBtn.disabled = false;
-                nextBtn.classList.replace('bg-slate-200', 'bg-indigo-600');
-                nextBtn.classList.replace('text-slate-400', 'text-white');
+    function renderReasons() {
+        const container = document.getElementById('reason-container');
+        container.innerHTML = '';
+        reasons[selections.q1].forEach((text, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'q3-opt btn-select w-full p-4 text-left bg-white rounded-xl shadow-sm border border-slate-100 text-sm';
+            btn.innerText = text;
+            btn.onclick = () => selectOption('q3', idx);
+            container.appendChild(btn);
+        });
+    }
+
+    function showResults() {
+        // 데이터 누적 및 저장
+        savedData[selections.q1]++;
+        savedData['reason' + selections.q3]++;
+        localStorage.setItem('surveyStats', JSON.stringify(savedData));
+
+        document.getElementById('total-count').innerText = savedData.offline + savedData.chatbot;
+
+        new Chart(document.getElementById('resultChart1'), {
+            type: 'doughnut',
+            data: {
+                labels: ['대면', '챗봇'],
+                datasets: [{ data: [savedData.offline, savedData.chatbot], backgroundColor: ['#3b82f6', '#a855f7'], borderWidth: 0 }]
+            },
+            options: { cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
+        });
+
+        new Chart(document.getElementById('resultChart2'), {
+            type: 'bar',
+            data: {
+                labels: reasons[selections.q1],
+                datasets: [{
+                    label: '선택 인원',
+                    data: [savedData.reason0, savedData.reason1, savedData.reason2],
+                    backgroundColor: selections.q1 === 'offline' ? '#93c5fd' : '#d8b4fe',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 10 } } } },
+                plugins: { legend: { display: false } }
             }
-        }
-
-        function renderReasons() {
-            const container = document.getElementById('reason-container');
-            container.innerHTML = '';
-            reasons[selections.q1].forEach((text, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'q3-opt btn-select w-full p-4 text-left bg-white rounded-xl shadow-sm border border-slate-100 text-sm';
-                btn.innerText = text;
-                btn.onclick = () => selectOption('q3', idx);
-                container.appendChild(btn);
-            });
-        }
-
-        function showResults() {
-            mainStats[selections.q1]++;
-            reasonStats[selections.q3]++;
-            document.getElementById('total-count').innerText = mainStats.offline + mainStats.chatbot;
-
-            // Chart 1: 선호도 도넛 차트
-            new Chart(document.getElementById('resultChart1'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['대면', '챗봇'],
-                    datasets: [{ data: [mainStats.offline, mainStats.chatbot], backgroundColor: ['#3b82f6', '#a855f7'], borderWidth: 0 }]
-                },
-                options: { cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
-            });
-
-            // Chart 2: 이유 통계 바 차트
-            new Chart(document.getElementById('resultChart2'), {
-                type: 'bar',
-                data: {
-                    labels: reasons[selections.q1],
-                    datasets: [{
-                        label: '선택 인원',
-                        data: [reasonStats[0], reasonStats[1], reasonStats[2]],
-                        backgroundColor: selections.q1 === 'offline' ? '#93c5fd' : '#d8b4fe',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 10 } } } },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+        });
+    }
+</script>
